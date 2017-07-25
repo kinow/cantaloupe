@@ -1,16 +1,17 @@
 package edu.illinois.library.cantaloupe;
 
-import edu.illinois.library.cantaloupe.cache.CacheFactory;
-import edu.illinois.library.cantaloupe.cache.DerivativeCache;
-import edu.illinois.library.cantaloupe.config.Configuration;
-import edu.illinois.library.cantaloupe.config.ConfigurationFactory;
-import edu.illinois.library.cantaloupe.config.Key;
-import edu.illinois.library.cantaloupe.image.Identifier;
-import edu.illinois.library.cantaloupe.image.Info;
-import edu.illinois.library.cantaloupe.operation.OperationList;
-import edu.illinois.library.cantaloupe.operation.Rotate;
-import edu.illinois.library.cantaloupe.test.BaseTest;
-import edu.illinois.library.cantaloupe.test.TestUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -25,22 +26,25 @@ import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.junit.Assert.*;
+import edu.illinois.library.cantaloupe.cache.CacheFactory;
+import edu.illinois.library.cantaloupe.cache.DerivativeCache;
+import edu.illinois.library.cantaloupe.config.Configuration;
+import edu.illinois.library.cantaloupe.config.ConfigurationFactory;
+import edu.illinois.library.cantaloupe.config.Key;
+import edu.illinois.library.cantaloupe.image.Identifier;
+import edu.illinois.library.cantaloupe.image.Info;
+import edu.illinois.library.cantaloupe.operation.OperationList;
+import edu.illinois.library.cantaloupe.operation.Rotate;
+import edu.illinois.library.cantaloupe.test.BaseTest;
+import edu.illinois.library.cantaloupe.test.TestUtil;
 
 public class StandaloneEntryTest extends BaseTest {
 
     private static final PrintStream CONSOLE_OUTPUT = System.out;
     private static final PrintStream CONSOLE_ERROR = System.err;
     private static final int HTTP_PORT = TestUtil.getOpenPort();
+
+    private Path cachePath;
 
     private Client httpClient;
 
@@ -65,10 +69,7 @@ public class StandaloneEntryTest extends BaseTest {
     }
 
     private File getCacheDir() throws IOException {
-        File directory = new File(".");
-        String cwd = directory.getCanonicalPath();
-        Path path = Paths.get(cwd, "src", "test", "resources", "cache");
-        return path.toFile();
+        return cachePath.toFile();
     }
 
     /**
@@ -100,6 +101,8 @@ public class StandaloneEntryTest extends BaseTest {
         config.setProperty(Key.HTTPS_ENABLED, false);
         config.setProperty(Key.RESOLVER_STATIC, "FilesystemResolver");
         config.setProperty(Key.PROCESSOR_FALLBACK, "Java2dProcessor");
+
+        cachePath = Files.createTempDirectory("cantaloupe-cache", new FileAttribute<?>[] {});
 
         httpClient = new Client(new Context(), Protocol.HTTP);
         httpClient.start();
@@ -411,11 +414,6 @@ public class StandaloneEntryTest extends BaseTest {
             // This is expected, as the server has called System.exit() before
             // it could generate a response.
         }
-
-        assertEquals(1, TestUtil.countFiles(imageDir));
-        assertEquals(1, TestUtil.countFiles(infoDir));
-
-        Thread.sleep(5000);
 
         assertEquals(0, TestUtil.countFiles(imageDir));
         assertEquals(0, TestUtil.countFiles(infoDir));
