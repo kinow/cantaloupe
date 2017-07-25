@@ -351,6 +351,12 @@
         <version>2.19.1</version>
         <configuration>
           <runOrder>random</runOrder>
+          <excludes>
+            <exclude>Azure*Test</exclude>
+            <exclude>Amazon*Test</exclude>
+            <exclude>Kakadu*Test</exclude>
+            <exclude>Redis*Test</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
