@@ -398,6 +398,9 @@ public class StandaloneEntryTest extends BaseTest {
         File.createTempFile("bla2", "tmp", imageDir);
         File.createTempFile("bla2", "tmp", infoDir);
 
+        assertEquals(2, TestUtil.countFiles(imageDir));
+        assertEquals(2, TestUtil.countFiles(infoDir));
+
         System.setProperty(ApplicationInitializer.PURGE_EXPIRED_FROM_CACHE_VM_ARGUMENT, "");
         StandaloneEntry.main(new String[] {});
 
@@ -409,10 +412,13 @@ public class StandaloneEntryTest extends BaseTest {
             // it could generate a response.
         }
 
-        Thread.sleep(5000);
-
         assertEquals(1, TestUtil.countFiles(imageDir));
         assertEquals(1, TestUtil.countFiles(infoDir));
+
+        Thread.sleep(5000);
+
+        assertEquals(0, TestUtil.countFiles(imageDir));
+        assertEquals(0, TestUtil.countFiles(infoDir));
     }
 
 }
