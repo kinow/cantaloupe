@@ -404,6 +404,7 @@ public class StandaloneEntryTest extends BaseTest {
         assertEquals(2, TestUtil.countFiles(imageDir));
         assertEquals(2, TestUtil.countFiles(infoDir));
 
+        Thread.sleep(2500);
         System.setProperty(ApplicationInitializer.PURGE_EXPIRED_FROM_CACHE_VM_ARGUMENT, "");
         StandaloneEntry.main(new String[] {});
 
