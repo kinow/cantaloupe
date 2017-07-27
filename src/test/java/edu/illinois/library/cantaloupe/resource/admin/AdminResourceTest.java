@@ -13,6 +13,8 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
@@ -118,10 +120,10 @@ public class AdminResourceTest extends ResourceTest {
         Map<String,Object> entityMap = new HashMap<>();
         entityMap.put("test", "cats");
         String entity = new ObjectMapper().writer().writeValueAsString(entityMap);
-
+        Representation representation = new StringRepresentation(entity, MediaType.APPLICATION_JSON);
         ClientResource client = getClientForUriPath(RestletApplication.ADMIN_PATH,
                 USERNAME, SECRET);
-        client.post(entity, MediaType.APPLICATION_JSON);
+        client.post(representation, MediaType.APPLICATION_JSON);
 
         assertEquals("cats", ConfigurationFactory.getInstance().getString("test"));
     }
