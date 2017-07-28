@@ -153,6 +153,12 @@
     </dependency>
     <!-- Enhanced ImageIO TIFF plugin supporting BigTIFF -->
     <dependency>
+      <groupId>com.github.jai-imageio</groupId>
+      <artifactId>jai-imageio-core</artifactId>
+      <version>1.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-tiff</artifactId>
       <version>1.1.17</version>
